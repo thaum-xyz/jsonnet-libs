@@ -1,7 +1,7 @@
 {
   sealedsecret(metadata, encryptedData): {
-    apiVersion: "bitnami.com/v1alpha1",
-    kind: "SealedSecret",
+    apiVersion: 'bitnami.com/v1alpha1',
+    kind: 'SealedSecret',
     metadata: metadata {
       creationTimestamp: null,
     },
@@ -10,11 +10,11 @@
       template: {
         metadata: metadata {
           annotations: {
-            "sealedsecrets.bitnami.com/managed": "true"
+            'sealedsecrets.bitnami.com/managed': 'true',
           },
           creationTimestamp: null,
-        }
-      }
-    }
+        },
+      },
+    },
   },
 }
