@@ -107,7 +107,7 @@ function(params) {
           labels: h._config.commonLabels,
         },
         spec: {
-          affinity: (import '../../../lib/podantiaffinity.libsonnet').podantiaffinity(h._config.name),
+          affinity: (import 'github.com/thaum-xyz/jsonnet-libs/utils/podantiaffinity.libsonnet').podantiaffinity(h._config.name),
           containers: [c],
           restartPolicy: 'Always',
           serviceAccountName: h.serviceAccount.metadata.name,

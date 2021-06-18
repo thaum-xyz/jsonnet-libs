@@ -234,7 +234,7 @@ function(params) {
         metadata: { labels: dns._config.commonLabels },
         spec: {
           serviceAccountName: dns.serviceAccount.metadata.name,
-          affinity: (import '../../../lib/podantiaffinity.libsonnet').podantiaffinity(dns._config.name),
+          affinity: (import 'github.com/thaum-xyz/jsonnet-libs/utils/podantiaffinity.libsonnet').podantiaffinity(dns._config.name),
           containers: [c],
           dnsPolicy: 'Default',
           volumes: [{

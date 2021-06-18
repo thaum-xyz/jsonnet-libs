@@ -123,7 +123,7 @@ function(params) {
       template: {
         metadata: { labels: $.config.commonLabels },
         spec: {
-          affinity: (import '../../../lib/podantiaffinity.libsonnet').podantiaffinity($.config.name),
+          affinity: (import 'github.com/thaum-xyz/jsonnet-libs/utils/podantiaffinity.libsonnet').podantiaffinity($.config.name),
           containers: [c],
           restartPolicy: 'Always',
           serviceAccountName: $.serviceAccount.metadata.name,
