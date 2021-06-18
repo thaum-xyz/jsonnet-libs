@@ -14,5 +14,5 @@ jobs:
       with:
         go-version: ${{ env.golang-version }}
     - name: Get jsonnet
-      run: go get github.com/google/go-jsonnet/cmd/jsonnet@7373f5b6067899549aa7524ca2bba0dff22fe494
+      run: go get github.com/google/go-jsonnet/cmd/jsonnetfmt@7373f5b6067899549aa7524ca2bba0dff22fe494
     - run: make --always-make fmt && git diff --exit-code
