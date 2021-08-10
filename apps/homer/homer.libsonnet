@@ -27,27 +27,25 @@ local defaults = {
 function(params) {
   local h = self,
   _config:: defaults + params,
+  _metadata:: {
+    name: h._config.name,
+    namespace: h._config.namespace,
+    labels: h._config.commonLabels,
+  },
   // Safety check
   assert std.isObject(h._config.resources),
 
   serviceAccount: {
     apiVersion: 'v1',
     kind: 'ServiceAccount',
-    metadata: {
-      name: h._config.name,
-      namespace: h._config.namespace,
-      labels: h._config.commonLabels,
-    },
+    automountServiceAccountToken: false,
+    metadata: h._metadata,
   },
 
   service: {
     apiVersion: 'v1',
     kind: 'Service',
-    metadata: {
-      name: h._config.name,
-      namespace: h._config.namespace,
-      labels: h._config.commonLabels,
-    },
+    metadata: h._metadata,
     spec: {
       ports: [{
         name: 'http',
@@ -62,10 +60,8 @@ function(params) {
   configmap: {
     apiVersion: 'v1',
     kind: 'ConfigMap',
-    metadata: {
+    metadata: h._metadata + {
       name: h._config.name + '-config',
-      namespace: h._config.namespace,
-      labels: h._config.commonLabels,
     },
     data: {
       'config.yml': h._config.configData,
@@ -91,11 +87,7 @@ function(params) {
 
     apiVersion: 'apps/v1',
     kind: 'Deployment',
-    metadata: {
-      name: h._config.name,
-      namespace: h._config.namespace,
-      labels: h._config.commonLabels,
-    },
+    metadata: h._metadata,
     spec: {
       replicas: h._config.replicas,
       selector: { matchLabels: h._config.selectorLabels },
