@@ -60,7 +60,7 @@ function(params) {
   configmap: {
     apiVersion: 'v1',
     kind: 'ConfigMap',
-    metadata: h._metadata + {
+    metadata: h._metadata {
       name: h._config.name + '-config',
     },
     data: {
