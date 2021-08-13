@@ -83,6 +83,7 @@ function(params) {
     kind: 'StatefulSet',
     metadata: e._metadata,
     spec: {
+      serviceName: e.service.metadata.name,
       replicas: 1,
       selector: { matchLabels: e._config.selectorLabels },
       template: {
