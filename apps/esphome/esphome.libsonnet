@@ -55,7 +55,7 @@ function(params) {
     spec: {
       ports: [{
         name: 'http',
-        targetPort: e.deployment.spec.template.spec.containers[0].ports[0].name,
+        targetPort: e.statefulset.spec.template.spec.containers[0].ports[0].name,
         port: 6052,
       }],
       selector: e._config.selectorLabels,
@@ -104,6 +104,15 @@ function(params) {
         },
       },
     },
+  },
+
+  [if std.objectHas(params, 'pvcSpec') && std.length(params.pvcSpec) > 0 then 'pvc']: {
+    apiVersion: 'v1',
+    kind: 'PersistentVolumeClaim',
+    metadata: e._metadata {
+      name: e._metadata.name + '-config',
+    },
+    spec: e._config.pvcSpec,
   },
 
 
