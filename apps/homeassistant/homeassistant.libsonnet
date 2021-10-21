@@ -19,6 +19,7 @@ local defaults = {
     for labelName in std.objectFields(defaults.commonLabels)
     if !std.setMember(labelName, ['app.kubernetes.io/version'])
   },
+  timezone: 'UTC',
   domain: '',
   zwaveSupport: false,
   hostNetwork: false,
@@ -65,6 +66,10 @@ function(params) {
       name: h._config.name,
       image: h._config.image,
       imagePullPolicy: 'IfNotPresent',
+      env: [{
+        name: "TZ",
+        value: h._config.timezone,
+      }],
       ports: [{
         containerPort: 8123,
         name: 'http',
