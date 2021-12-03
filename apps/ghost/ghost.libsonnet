@@ -72,6 +72,34 @@ function(params) {
     spec: $._config.pvcSpec,
   },
 
+  psp: {
+    apiVersion: 'policy/v1beta1',
+    kind: 'PodSecurityPolicy',
+    metadata: $._metadata,
+    spec: {
+      fsGroup: {
+        rule: "RunAsAny",
+      },
+      hostPorts: [{
+        max: 0,
+        min: 0,
+      }],
+      runAsUser: {
+        rule: 'RunAsAny',
+      },
+      seLinux: {
+        rule: "RunAsAny",
+      },
+      supplementalGroups: {
+        rule: 'RunAsAny',
+      },
+      volumes: [
+        'persistentVolumeClaim',
+        'emptyDir',
+      ],
+    },
+  },
+
   deployment: {
     local c = {
       name: g._config.name,
