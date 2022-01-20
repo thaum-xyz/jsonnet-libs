@@ -20,7 +20,7 @@ local defaults = {
   },
   domain: error 'must provide domain',
   storage: {
-    name: "ghost-data",
+    name: 'ghost-data',
     pvcSpec: {
       storageClassName: 'local-path',
       accessModes: ['ReadWriteOnce'],
@@ -30,7 +30,7 @@ local defaults = {
         },
       },
     },
-  }
+  },
 };
 
 function(params) {
@@ -70,7 +70,7 @@ function(params) {
   pvc: {
     apiVersion: 'v1',
     kind: 'PersistentVolumeClaim',
-    metadata: $._metadata + {
+    metadata: $._metadata {
       name: $._config.storage.name,
     },
     spec: $._config.storage.pvcSpec,
@@ -82,7 +82,7 @@ function(params) {
     metadata: $._metadata,
     spec: {
       fsGroup: {
-        rule: "RunAsAny",
+        rule: 'RunAsAny',
       },
       hostPorts: [{
         max: 0,
@@ -92,7 +92,7 @@ function(params) {
         rule: 'RunAsAny',
       },
       seLinux: {
-        rule: "RunAsAny",
+        rule: 'RunAsAny',
       },
       supplementalGroups: {
         rule: 'RunAsAny',

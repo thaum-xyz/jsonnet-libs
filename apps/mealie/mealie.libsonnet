@@ -73,8 +73,8 @@ function(params) {
   pvc: {
     apiVersion: 'v1',
     kind: 'PersistentVolumeClaim',
-    metadata: $._metadata + {
-      name: $._config.storage.name
+    metadata: $._metadata {
+      name: $._config.storage.name,
     },
     spec: $._config.pvcSpec,
   },

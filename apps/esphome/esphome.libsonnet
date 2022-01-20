@@ -20,7 +20,7 @@ local defaults = {
   domain: '',
   hostNetwork: true,
   storage: {
-    name: "esphome-data",
+    name: 'esphome-data',
     pvcSpec: {
       storageClassName: 'local-path',
       accessModes: ['ReadWriteOnce'],
@@ -102,10 +102,10 @@ function(params) {
       },
       volumeClaimTemplates: [{
         metadata: {
-          name: e._config.storage.name
-        }
-        spec: e._config.storage.pvcSpec
-      }]
+          name: e._config.storage.name,
+        },
+        spec: e._config.storage.pvcSpec,
+      }],
     },
   },
 

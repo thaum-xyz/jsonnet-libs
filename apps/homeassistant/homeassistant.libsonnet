@@ -24,7 +24,7 @@ local defaults = {
   zwaveSupport: false,
   hostNetwork: false,
   storage: {
-    name: "homeassistant-data",
+    name: 'homeassistant-data',
     pvcSpec: {
       storageClassName: 'local-path',
       accessModes: ['ReadWriteOnce'],
@@ -34,7 +34,7 @@ local defaults = {
         },
       },
     },
-  }
+  },
   // TODO: Consider creting an operator just to handle this part
   apiTokenSecretKeySelector: {},
 };
@@ -78,7 +78,7 @@ function(params) {
       image: h._config.image,
       imagePullPolicy: 'IfNotPresent',
       env: [{
-        name: "TZ",
+        name: 'TZ',
         value: h._config.timezone,
       }],
       ports: [{
@@ -125,10 +125,10 @@ function(params) {
       },
       volumeClaimTemplates: [{
         metadata: {
-          name: h._config.storage.name
-        }
-        spec: h._config.storage.pvcSpec
-      }]
+          name: h._config.storage.name,
+        },
+        spec: h._config.storage.pvcSpec,
+      }],
     },
   },
 
