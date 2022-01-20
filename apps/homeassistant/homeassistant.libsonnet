@@ -85,13 +85,22 @@ function(params) {
         containerPort: 8123,
         name: 'http',
       }],
+      startupProbe: {
+        httpGet: {
+          path: '/',
+          port: 'http',
+          scheme: 'HTTP',
+        },
+        failureThreshold: 30,
+        periodSeconds: 2,
+      },
       readinessProbe: {
         httpGet: {
           path: '/',
           port: 'http',
           scheme: 'HTTP',
         },
-        initialDelaySeconds: 60,
+        initialDelaySeconds: 5,
         failureThreshold: 5,
         timeoutSeconds: 10,
       },
