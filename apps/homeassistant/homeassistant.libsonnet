@@ -23,7 +23,18 @@ local defaults = {
   domain: '',
   zwaveSupport: false,
   hostNetwork: false,
-  pvcSpec: '',
+  storage: {
+    name: "homeassistant-data",
+    pvcSpec: {
+      storageClassName: 'local-path',
+      accessModes: ['ReadWriteOnce'],
+      resources: {
+        requests: {
+          storage: '2Gi',
+        },
+      },
+    },
+  }
   // TODO: Consider creting an operator just to handle this part
   apiTokenSecretKeySelector: {},
 };
@@ -89,7 +100,7 @@ function(params) {
       },
       volumeMounts: [{
         mountPath: '/config',
-        name: 'config',
+        name: h._config.storage.name,
       }],
       resources: h._config.resources,
     },
@@ -110,25 +121,15 @@ function(params) {
           restartPolicy: 'Always',
           serviceAccountName: h.serviceAccount.metadata.name,
           hostNetwork: h._config.hostNetwork,
-          volumes: [{
-            name: 'config',
-            // Add conditional based on pvcSpec
-            persistentVolumeClaim: {
-              claimName: h.pvc.metadata.name,
-            },
-          }],
         },
       },
+      volumeClaimTemplates: [{
+        metadata: {
+          name: h._config.storage.name
+        }
+        spec: h._config.storage.pvcSpec
+      }]
     },
-  },
-
-  [if std.objectHas(params, 'pvcSpec') && std.length(params.domain) > 0 then 'pvc']: {
-    apiVersion: 'v1',
-    kind: 'PersistentVolumeClaim',
-    metadata: h._metadata {
-      name: 'config',
-    },
-    spec: h._config.pvcSpec,
   },
 
   [if std.objectHas(params, 'apiTokenSecretKeySelector') && std.length(params.domain) > 0 then 'serviceMonitor']: {

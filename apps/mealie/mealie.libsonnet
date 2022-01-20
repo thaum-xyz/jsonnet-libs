@@ -22,12 +22,15 @@ local defaults = {
   },
   domain: '',
   // TODO: Make pvcSpec generic
-  pvcSpec: {
-    storageClassName: 'local-path',
-    accessModes: ['ReadWriteOnce'],
-    resources: {
-      requests: {
-        storage: '1Gi',
+  storage: {
+    name: defaults.name,
+    pvcSpec: {
+      storageClassName: 'local-path',
+      accessModes: ['ReadWriteOnce'],
+      resources: {
+        requests: {
+          storage: '1Gi',
+        },
       },
     },
   },
@@ -70,7 +73,9 @@ function(params) {
   pvc: {
     apiVersion: 'v1',
     kind: 'PersistentVolumeClaim',
-    metadata: $._metadata,
+    metadata: $._metadata + {
+      name: $._config.storage.name
+    },
     spec: $._config.pvcSpec,
   },
 

@@ -19,12 +19,15 @@ local defaults = {
   },
   domain: '',
   hostNetwork: true,
-  pvcSpec: {
-    storageClassName: 'local-path',
-    accessModes: ['ReadWriteOnce'],
-    resources: {
-      requests: {
-        storage: '200Mi',
+  storage: {
+    name: "esphome-data",
+    pvcSpec: {
+      storageClassName: 'local-path',
+      accessModes: ['ReadWriteOnce'],
+      resources: {
+        requests: {
+          storage: '200Mi',
+        },
       },
     },
   },
@@ -74,7 +77,7 @@ function(params) {
       }],
       volumeMounts: [{
         mountPath: '/config',
-        name: 'config',
+        name: e._config.storage.name,
       }],
       resources: e._config.resources,
     },
@@ -95,27 +98,16 @@ function(params) {
           restartPolicy: 'Always',
           serviceAccountName: e.serviceAccount.metadata.name,
           hostNetwork: e._config.hostNetwork,
-          volumes: [{
-            name: 'config',
-            // Add conditional based on pvcSpec
-            persistentVolumeClaim: {
-              claimName: e.pvc.metadata.name,
-            },
-          }],
         },
       },
+      volumeClaimTemplates: [{
+        metadata: {
+          name: e._config.storage.name
+        }
+        spec: e._config.storage.pvcSpec
+      }]
     },
   },
-
-  [if std.objectHas(params, 'pvcSpec') && std.length(params.pvcSpec) > 0 then 'pvc']: {
-    apiVersion: 'v1',
-    kind: 'PersistentVolumeClaim',
-    metadata: e._metadata {
-      name: e._metadata.name + '-config',
-    },
-    spec: e._config.pvcSpec,
-  },
-
 
   [if std.objectHas(params, 'domain') && std.length(params.domain) > 0 then 'ingress']: {
     apiVersion: 'networking.k8s.io/v1',

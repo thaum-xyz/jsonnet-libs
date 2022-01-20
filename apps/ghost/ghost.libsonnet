@@ -19,16 +19,18 @@ local defaults = {
     if !std.setMember(labelName, ['app.kubernetes.io/version'])
   },
   domain: error 'must provide domain',
-  // TODO: Make pvcSpec generic
-  pvcSpec: {
-    storageClassName: 'local-path',
-    accessModes: ['ReadWriteMany'],
-    resources: {
-      requests: {
-        storage: '2Gi',
+  storage: {
+    name: "ghost-data",
+    pvcSpec: {
+      storageClassName: 'local-path',
+      accessModes: ['ReadWriteOnce'],
+      resources: {
+        requests: {
+          storage: '2Gi',
+        },
       },
     },
-  },
+  }
 };
 
 function(params) {
@@ -68,8 +70,10 @@ function(params) {
   pvc: {
     apiVersion: 'v1',
     kind: 'PersistentVolumeClaim',
-    metadata: $._metadata,
-    spec: $._config.pvcSpec,
+    metadata: $._metadata + {
+      name: $._config.storage.name,
+    },
+    spec: $._config.storage.pvcSpec,
   },
 
   psp: {
