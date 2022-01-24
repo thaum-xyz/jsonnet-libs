@@ -21,7 +21,6 @@ local defaults = {
     if !std.setMember(labelName, ['app.kubernetes.io/version'])
   },
   domain: '',
-  // TODO: Make pvcSpec generic
   storage: {
     name: defaults.name,
     pvcSpec: {
@@ -76,7 +75,7 @@ function(params) {
     metadata: $._metadata {
       name: $._config.storage.name,
     },
-    spec: $._config.pvcSpec,
+    spec: $._config.storage.pvcSpec,
   },
 
   deployment: {
