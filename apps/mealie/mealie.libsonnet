@@ -96,6 +96,16 @@ function(params) {
         containerPort: 80,
         name: 'http',
       }],
+      readinessProbe: {
+        httpGet: {
+          path: '/api/debug/version',
+          port: 'http',
+          scheme: 'HTTP',
+        },
+        initialDelaySeconds: 5,
+        failureThreshold: 5,
+        timeoutSeconds: 10,
+      },
       volumeMounts: [{
         mountPath: '/app/data',
         name: 'appdata',
