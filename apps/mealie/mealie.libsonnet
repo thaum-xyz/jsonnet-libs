@@ -24,7 +24,7 @@ local defaults = {
   storage: {
     name: defaults.name,
     pvcSpec: {
-      storageClassName: 'local-path',
+      # storageClassName: 'local-path',
       accessModes: ['ReadWriteOnce'],
       resources: {
         requests: {

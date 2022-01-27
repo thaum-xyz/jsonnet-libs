@@ -26,7 +26,7 @@ local defaults = {
   storage: {
     name: 'homeassistant-data',
     pvcSpec: {
-      storageClassName: 'local-path',
+      # storageClassName: 'local-path',
       accessModes: ['ReadWriteOnce'],
       resources: {
         requests: {

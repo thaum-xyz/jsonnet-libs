@@ -22,7 +22,7 @@ local defaults = {
   storage: {
     name: 'esphome-data',
     pvcSpec: {
-      storageClassName: 'local-path',
+      # storageClassName: 'local-path',
       accessModes: ['ReadWriteOnce'],
       resources: {
         requests: {
