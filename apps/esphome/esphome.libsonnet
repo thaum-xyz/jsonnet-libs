@@ -71,6 +71,10 @@ function(params) {
       name: e._config.name,
       image: e._config.image,
       imagePullPolicy: 'IfNotPresent',
+      env: [{
+        name: "ESPHOME_DASHBOARD_USE_PING",
+        value: "true",
+      }],
       ports: [{
         containerPort: 6052,
         name: 'http',
