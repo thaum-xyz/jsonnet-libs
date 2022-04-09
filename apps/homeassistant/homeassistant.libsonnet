@@ -91,7 +91,7 @@ function(params) {
           port: 'http',
           scheme: 'HTTP',
         },
-        failureThreshold: 30,
+        failureThreshold: 120,
         periodSeconds: 2,
       },
       readinessProbe: {
