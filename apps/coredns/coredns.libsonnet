@@ -32,87 +32,91 @@ local defaults = {
 };
 
 function(params) {
-  local dns = self,
   _config:: defaults + params,
-  metadata:: {
-    name: dns._config.name,
-    namespace: dns._config.namespace,
-    labels: dns._config.commonLabels,
+  _metadata:: {
+    name: $._config.name,
+    namespace: $._config.namespace,
+    labels: $._config.commonLabels,
   },
 
   mixin:: (import 'github.com/povilasv/coredns-mixin/mixin.libsonnet') +
           (import 'github.com/kubernetes-monitoring/kubernetes-mixin/alerts/add-runbook-links.libsonnet') {
-            _config+:: dns._config.mixin._config,
+            _config+:: $._config.mixin._config,
           },
 
   prometheusRule: {
     apiVersion: 'monitoring.coreos.com/v1',
     kind: 'PrometheusRule',
-    metadata: dns.metadata {
-      labels: dns._config.mixin.ruleLabels + dns.metadata.labels,
+    metadata: $._metadata {
+      labels: $._config.mixin.ruleLabels + $._metadata.labels,
     },
     spec: {
-      local r = if std.objectHasAll(dns.mixin, 'prometheusRules') then dns.mixin.prometheusRules.groups else [],
-      local a = if std.objectHasAll(dns.mixin, 'prometheusAlerts') then dns.mixin.prometheusAlerts.groups else [],
+      local r = if std.objectHasAll($.mixin, 'prometheusRules') then $.mixin.prometheusRules.groups else [],
+      local a = if std.objectHasAll($.mixin, 'prometheusAlerts') then $.mixin.prometheusAlerts.groups else [],
       groups: a + r,
     },
   },
 
-  dashboardCM: {
+  dashboards: {
     apiVersion: 'v1',
-    kind: 'ConfigMap',
-    metadata: dns.metadata {
-      name: dns.metadata.name + '-dashboards',
-      labels+: {
-        grafana: 'dashboard',
-      },
-    },
-    //TODO: Fix this to loop over objects
-    //data: dns.mixin.grafanaDashboards,
-    data: {
-      'coredns.json': std.toString(dns.mixin.grafanaDashboards['coredns.json']),
-    },
+    kind: 'ConfigMapList',
+    items: [
+      {
+        local dashboardName = 'grafana-dashboard-' + std.strReplace(name, '.json', ''),
+        apiVersion: 'v1',
+        kind: 'ConfigMap',
+        metadata: $._metadata {
+          name: dashboardName,
+          labels+: {
+            "grafana_dashboard": 'true',
+            'dashboard.grafana.com/load': 'true',
+          },
+        },
+        data: { [name]: std.manifestJsonEx($.mixin.grafanaDashboards[name], '    ') },
+      }
+      for name in std.objectFields($.mixin.grafanaDashboards)
+    ],
   },
 
   serviceAccount: {
     apiVersion: 'v1',
     kind: 'ServiceAccount',
     automountServiceAccountToken: false,
-    metadata: dns.metadata,
+    metadata: $._metadata,
   },
 
   // TODO: Converge into one Service object when k8s LoadBalancer will allow to share UDP and TCP protocols
   serviceTCP: {
     apiVersion: 'v1',
     kind: 'Service',
-    metadata: dns.metadata { name: dns._config.name + '-tcp' },
+    metadata: $._metadata { name: $._config.name + '-tcp' },
     spec: {
       type: 'LoadBalancer',
-      loadBalancerIP: dns._config.loadBalancerIP,
+      loadBalancerIP: $._config.loadBalancerIP,
       ports: [{
         name: 'dns-tcp',
         targetPort: 'dns-tcp',
         port: 53,
         protocol: 'TCP',
       }],
-      selector: dns._config.selectorLabels,
+      selector: $._config.selectorLabels,
     },
   },
 
   serviceUDP: {
     apiVersion: 'v1',
     kind: 'Service',
-    metadata: dns.metadata { name: dns._config.name + '-udp' },
+    metadata: $._metadata { name: $._config.name + '-udp' },
     spec: {
       type: 'LoadBalancer',
-      loadBalancerIP: dns._config.loadBalancerIP,
+      loadBalancerIP: $._config.loadBalancerIP,
       ports: [{
         name: 'dns-udp',
         targetPort: 'dns-udp',
         port: 53,
         protocol: 'UDP',
       }],
-      selector: dns._config.selectorLabels,
+      selector: $._config.selectorLabels,
     },
   },
 
@@ -120,14 +124,14 @@ function(params) {
   podMonitor: {
     apiVersion: 'monitoring.coreos.com/v1',
     kind: 'PodMonitor',
-    metadata: dns.metadata,
+    metadata: $._metadata,
     spec: {
       podMetricsEndpoints: [{
         port: 'metrics',
         interval: '30s',
       }],
       selector: {
-        matchLabels: dns._config.selectorLabels,
+        matchLabels: $._config.selectorLabels,
       },
     },
   },
@@ -135,11 +139,11 @@ function(params) {
   podDisruptionBudget: {
     apiVersion: 'policy/v1beta1',
     kind: 'PodDisruptionBudget',
-    metadata: dns.metadata,
+    metadata: $._metadata,
     spec: {
       minAvailable: 1,
       selector: {
-        matchLabels: dns._config.selectorLabels,
+        matchLabels: $._config.selectorLabels,
       },
     },
   },
@@ -147,25 +151,25 @@ function(params) {
   config: {
     apiVersion: 'v1',
     kind: 'ConfigMap',
-    metadata: dns.metadata {
-      name: dns._config.name + '-corefile',
+    metadata: $._metadata {
+      name: $._config.name + '-corefile',
     },
     data: {
-      Corefile: dns._config.corefile,
+      Corefile: $._config.corefile,
       //Corefile: 'ok',
     },
   },
 
   local c = {
-    name: dns._config.name,
-    image: dns._config.image,
+    name: $._config.name,
+    image: $._config.image,
     imagePullPolicy: 'Always',
-    resources: dns._config.resources,
+    resources: $._config.resources,
     args: ['-conf', '/etc/coredns/Corefile'],
-    [if dns._config.secretName != '' then 'envFrom']: [
+    [if $._config.secretName != '' then 'envFrom']: [
       {
         secretRef: {
-          name: dns._config.secretName,
+          name: $._config.secretName,
         },
       },
     ],
@@ -221,7 +225,7 @@ function(params) {
   deployment: {
     apiVersion: 'apps/v1',
     kind: 'Deployment',
-    metadata: dns.metadata,
+    metadata: $._metadata,
     spec: {
       strategy: {
         type: 'RollingUpdate',
@@ -229,19 +233,19 @@ function(params) {
           maxUnavailable: 1,
         },
       },
-      replicas: dns._config.replicas,
-      selector: { matchLabels: dns._config.selectorLabels },
+      replicas: $._config.replicas,
+      selector: { matchLabels: $._config.selectorLabels },
       template: {
-        metadata: { labels: dns._config.commonLabels },
+        metadata: { labels: $._config.commonLabels },
         spec: {
-          serviceAccountName: dns.serviceAccount.metadata.name,
-          affinity: (import 'github.com/thaum-xyz/jsonnet-libs/utils/podantiaffinity.libsonnet').podantiaffinity(dns._config.name),
+          serviceAccountName: $.serviceAccount.metadata.name,
+          affinity: (import 'github.com/thaum-xyz/jsonnet-libs/utils/podantiaffinity.libsonnet').podantiaffinity($._config.name),
           containers: [c],
           dnsPolicy: 'Default',
           volumes: [{
             name: 'corefile',
             configMap: {
-              name: dns.config.metadata.name,
+              name: $.config.metadata.name,
               items: [{
                 key: 'Corefile',
                 path: 'Corefile',
