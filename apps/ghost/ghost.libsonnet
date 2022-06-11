@@ -22,7 +22,7 @@ local defaults = {
   storage: {
     name: 'ghost-data',
     pvcSpec: {
-      # storageClassName: 'local-path',
+      // storageClassName: 'local-path',
       accessModes: ['ReadWriteOnce'],
       resources: {
         requests: {
