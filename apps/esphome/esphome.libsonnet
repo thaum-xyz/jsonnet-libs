@@ -22,7 +22,7 @@ local defaults = {
   storage: {
     name: 'esphome-data',
     pvcSpec: {
-      # storageClassName: 'local-path',
+      // storageClassName: 'local-path',
       accessModes: ['ReadWriteOnce'],
       resources: {
         requests: {
@@ -72,8 +72,8 @@ function(params) {
       image: e._config.image,
       imagePullPolicy: 'IfNotPresent',
       env: [{
-        name: "ESPHOME_DASHBOARD_USE_PING",
-        value: "true",
+        name: 'ESPHOME_DASHBOARD_USE_PING',
+        value: 'true',
       }],
       ports: [{
         containerPort: 6052,

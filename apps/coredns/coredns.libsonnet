@@ -68,7 +68,7 @@ function(params) {
         metadata: $._metadata {
           name: dashboardName,
           labels+: {
-            "grafana_dashboard": 'true',
+            grafana_dashboard: 'true',
             'dashboard.grafana.com/load': 'true',
           },
         },
