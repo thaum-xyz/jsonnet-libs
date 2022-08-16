@@ -137,7 +137,7 @@ function(params) {
   },
 
   podDisruptionBudget: {
-    apiVersion: 'policy/v1beta1',
+    apiVersion: 'policy/v1',
     kind: 'PodDisruptionBudget',
     metadata: $._metadata,
     spec: {
