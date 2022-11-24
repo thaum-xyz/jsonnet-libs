@@ -209,6 +209,9 @@ function(params) {
     local e = {
       name: 'exporter',
       image: $._config.exporterImage,
+      args: [
+        "--no-collector.database",
+      ],
       env: [
         {
           name: 'DATA_SOURCE_URI',
