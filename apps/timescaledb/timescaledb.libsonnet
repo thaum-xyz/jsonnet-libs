@@ -178,12 +178,24 @@ function(params) {
           value: 'basic',
         },
         {
-          name: 'TS_TUNE_MEMORY',
-          value: '300MB',  // FIXME: Take value from resource limits
+          name: "TS_TUNE_NUM_CPUS",
+          valueFrom: {
+            resourceFieldRef: {
+              containerName: $._config.name,
+              resource: "limits.cpu",
+              divisor: "1",
+            },
+          },
         },
         {
-          name: 'TS_TUNE_NUM_CPUS',
-          value: '1',  // FIXME: Take value from resource limits
+          name: "TS_TUNE_MEMORY",
+          valueFrom: {
+            resourceFieldRef: {
+              containerName: $._config.name,
+              resource: "limits.memory",
+              divisor: "1Mi",
+            },
+          },
         },
       ],
       envFrom: [{
