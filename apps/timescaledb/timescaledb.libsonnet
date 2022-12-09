@@ -156,7 +156,10 @@ function(params) {
       name: 'additional-sql',
     },
     data: {
-      'alter-extension.sql': 'ALTER EXTENSION timescaledb UPDATE;',
+      'alter-extension.sql': |||
+        CREATE EXTENSION IF NOT EXISTS timescaledb CASCADE;
+        ALTER EXTENSION timescaledb UPDATE;
+      |||,
     },
   },
 
