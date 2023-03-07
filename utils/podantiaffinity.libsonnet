@@ -1,3 +1,4 @@
+# DEPRECATED
 {
   podantiaffinity(value): {
     podAntiAffinity: {
